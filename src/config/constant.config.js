@@ -26,19 +26,6 @@ const MESSAGES = {
         NOT_UPDATED: 'Account updated unsuccessful',
         UNAUTHORIZED: 'Unauthorized access ',
         SERVER_ERROR: 'Internal Server Error'
-    },
-
-    REVIEW: {
-        SUCCESSFULLY_ADDED: 'Review added Successfully and sent to Company',
-        FAILED_TO_ADD: "Failed To Add Review!",
-        FOUND_REVIEWS: "Reviews Successfully fetched",
-        FAILED_FETCH: "Unable to Fetch Review",
-        ERROR: "An Error Occured ",
-        INVALID_ID: "Invalid ID",
-        NO_REVIEW: "No reviews found for the specified company.",
-        FETCHED: "Review successfully fetched",
-        EMPTY: "No Review available",
-        NOT_SENT: 'Error sending email: '
     }
 }
 
