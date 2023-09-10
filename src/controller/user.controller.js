@@ -4,6 +4,9 @@ const { MESSAGES } = require('../config/constant.config');
 const usersServices = require('../service/user.service')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const senderEmail = process.env.EMAIL;
+const pass = process.env.APP_PASSWORD
 
 
 
@@ -91,6 +94,140 @@ class userControllers {
         } catch (err) {
             return res.status(500).send({
                 message: MESSAGES.USER.SERVER_ERROR + err,
+                success: false
+            });
+        }
+    }
+
+    //forgotten password
+    async forgotPassword(req, res, next) {
+        try {
+            //check if the email exist in the database
+            const { email } = req.body
+            const userEmail = await getAUserByEmail({ email: email });
+            if (!userEmail) {
+                return res.status(404).send({
+                    message: MESSAGES.USER.EMAIL_NOTFOUND,
+                    success: false
+                })
+            }
+            //if the email exists send
+            const secret = process.env.SECRET_KEY
+            const payload = {
+                email: userEmail.email,
+                id: userEmail.id
+            }
+
+            const token = jwt.sign(payload, secret, { expiresIn: '15m' })
+            const link = `http://localhost:3000/user/reset-password/${userEmail.id}/${token}`
+
+            //email sending
+            const transporter = nodemailer.createTransport({
+                service: "yahoo",
+                auth: {
+                    user: senderEmail,
+                    pass: pass
+                }
+            });
+
+            // Composed the email message
+            const mailOptions = {
+                from: senderEmail,
+                to: email,
+                subject: 'Reset Password',
+                html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Password Reset</title>
+                    </head>
+                    <body>
+                        <p>Hello,</p>
+                        <p>You've requested to reset your password. Click the link below to reset it:</p>
+                        <a href="${link}">Reset Password</a>
+                    </body>
+                    </html>
+                    `
+            };
+
+            // Sending the email 
+            transporter.sendMail(mailOptions, (error) => {
+                if (error) {
+                    return res.status(501).send({
+                        message: MESSAGES.USER.EMAIL_UNSENT + error,
+                        success: false,
+                    })
+                }
+            });
+
+            return res.status(201).send({
+                success: true,
+                message: MESSAGES.USER.EMAIL_SENT
+            })
+        } catch (error) {
+            return res.status(500).send({
+                message: MESSAGES.USER.SERVER_ERROR + error,
+                success: false
+            });
+        }
+    }
+
+    //reset password using sent email link
+    async forgottenPassword(req, res, next) {
+        try {
+            const { id, token } = req.params
+            //check if a user with the id exist in db
+            const checkUser = await getAUserById(id)
+            if (!checkUser) {
+                return res.status(401).send({
+                    message: MESSAGES.USER.ACCOUNT_NOT_REGISTERED,
+                    success: false
+                });
+            }
+
+            try {
+                const secret = process.env.SECRET_KEY
+                const decode = jwt.verify(token, secret)
+                return res.status(200).send({
+                    message: MESSAGES.USER.VALID_LINK,
+                    success: true
+                });
+            } catch (error) {
+                return res.status(403).send({
+                    message: MESSAGES.USER.INVALID_LINK + error,
+                    success: false
+                });
+            }
+
+        } catch (error) {
+            return res.status(500).send({
+                message: MESSAGES.USER.SERVER_ERROR + error,
+                success: false
+            });
+        }
+    }
+
+    //updates the password field
+    async updatePassword(req, res, next) {
+        try {
+            //check if  the email exist
+            const { email, password } = req.body
+            const findUserEmail = await getAUserByEmail({ email: email });
+            if (!findUserEmail) {
+                return res.status(401).send({
+                    message: MESSAGES.USER.EMAIL_NOTFOUND,
+                    success: false
+                })
+            }
+            //generate new password and update it
+            await updateUser(id, password);
+            return res.status(201).send({
+                message: MESSAGES.USER.ACCOUNT_UPDATED,
+                success: false
+            })
+        } catch (error) {
+            return res.status(500).send({
+                message: MESSAGES.USER.SERVER_ERROR + error,
                 success: false
             });
         }

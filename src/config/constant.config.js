@@ -25,7 +25,11 @@ const MESSAGES = {
         ACCOUNT_UPDATED: 'Account updated successfully',
         NOT_UPDATED: 'Account updated unsuccessful',
         UNAUTHORIZED: 'Unauthorized access ',
-        SERVER_ERROR: 'Internal Server Error'
+        SERVER_ERROR: 'Internal Server Error',
+        EMAIL_SENT: 'Reset link has been sent to your email',
+        EMAIL_UNSENT: 'Reset link not sent',
+        VALID_LINK: "Link is valid proceed to re-routing to change password",
+        INVALID_LINK: "Link is invalid or has expired"
     }
 }
 
