@@ -21,8 +21,8 @@ userRouter.post("/user/logout", loggedOut);
 userRouter.get("/user", fetchAllUsers);
 userRouter.get("/user/reset-password/:id/:token", forgottenPassword);
 userRouter.get("/user/:id", findAUser);
-userRouter.patch("/user/:id", updateAUser);
 userRouter.patch("/user/setpassword", updatePassword);
+userRouter.patch("/user/:id", updateAUser);
 userRouter.delete("/user/:id", removeUser);
 
 module.exports = userRouter;
