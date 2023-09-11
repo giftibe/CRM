@@ -219,10 +219,11 @@ class userControllers {
                     success: false
                 })
             }
+            const { id } = findUserEmail
             //generate new password and update it
-            await updateUser(id, password);
+            await updateUser(id, { password: password });
             return res.status(201).send({
-                message: MESSAGES.USER.ACCOUNT_UPDATED,
+                message: MESSAGES.USER.PASSWORD_UPDATED,
                 success: false
             })
         } catch (error) {
