@@ -9,9 +9,9 @@ const {
   updateAUser,
   removeUser,
   loggedOut,
-  forgotPassword, 
+  forgotPassword,
   forgottenPassword,
-  updatePassword
+  updatePassword,
 } = (userController = require("../controller/user.controller"));
 
 userRouter.post("/user/register", signUp);
