@@ -1,36 +1,68 @@
 const users = require("../model/user.model");
 
 class userService {
+  // Function to create a user
   async createUser(data) {
-    //to create a user
     await users.create(data);
     return await users.find(data, { _id: 1, password: 0 });
   }
 
+  // Function to get a user by ID
   async getAUserById(id) {
-    //get a single user by id
     return await users.findById(id, { _id: 1, password: 0 });
   }
 
+  // Function to get all users
   async getAllUsers() {
-    //get all users
     return await users.find({}, { _id: 1, password: 0 });
   }
 
+  // Function to delete a user
   async deleteUser(id) {
-    // delete a user
     return await users.findByIdAndDelete(id);
   }
 
+  // Function to get a user by email
   async getAUserByEmail(data) {
-    //get a single user by id
     return await users.findOne(data);
   }
 
+  // Function to update a user's data
   async updateUser(id, data) {
-    // delete a user
     await users.findByIdAndUpdate(id, data);
     return await users.find(data, { _id: 1, password: 0 });
   }
+
+  // Function to update a user's verification status
+  async updateUserVerificationStatus(email, isVerified) {
+    try {
+      const user = await users.findOneAndUpdate(
+        { email: email },
+        { $set: { isVerified: isVerified } },
+        { new: true }
+      );
+      return user;
+    } catch (error) {
+      return res.status(403).send({
+        message: MESSAGES.USER.NOT_VERIFIED,
+        success: false,
+      });
+    }
+  }
+
+  // Function to create a user with verification token
+  async createUserWithVerification(data) {
+    try {
+      const secret = process.env.SECRET_KEY;
+      const verificationToken = jwt.sign({ email: data.email }, secret, {
+        expiresIn: "5m",
+      });
+      const user = await this.createUser({ ...data, verificationToken });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
 module.exports = new userService();
