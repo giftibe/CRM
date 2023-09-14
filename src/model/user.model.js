@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const rounds = parseInt(process.env.ROUNDS);
 const bcrypt = require("bcrypt");
+const { ENUM } = require('../config/constant.config')
 
 const userSchema = new Schema(
   {
@@ -18,6 +19,43 @@ const userSchema = new Schema(
       trim: true,
       required: true,
     },
+
+    firstName:{
+      type: String,
+      trim: true,
+      default: ENUM.FIRSTNAME
+    },
+
+    lastName: {
+      type: String,
+      trim: true,
+      default: ENUM.LASTNAME
+    },
+
+    mobile: {
+      type: Number,
+      trim: true,
+      default: ENUM.MOBILE
+    },
+
+    country: {
+      type: String,
+      trim: true,
+      default: ENUM.COUNTRY
+    },
+
+    state: {
+      type: String,
+      trim: true,
+      default: ENUM.STATE
+    },
+
+    image: {
+      type: String,
+      trim: true,
+      default: ENUM.IMAGE
+    }
+
   },
   { timestamps: true }
 );
