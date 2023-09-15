@@ -43,11 +43,13 @@ const MESSAGES = {
     INVALID_LINK: "Link is invalid or has expired",
     EMAIL_VER_FAILED: "Email verification failed.",
     EMAIL_VERIFIED: "Email verified successfully.",
+    WELCOME_EMAIL_ERROR: "error sending welcome email",
     INVALID_TOKEN: "Invalid or expired verification token.",
     NOT_VERIFIED: "user is not verified.",
-    EMAIL_NOT_VERIFIED: "Email not verified. Please check your email for a verification link.",
+    EMAIL_NOT_VERIFIED:
+      "Email not verified. Please check your email for a verification link.",
     PICTURE_UPLOADED: "Picture uploaded successfully",
-    PICTURE_NOT_UPLOADED: "Picture not uploaded"
+    PICTURE_NOT_UPLOADED: "Picture not uploaded",
   },
 };
 
