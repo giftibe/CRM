@@ -1,5 +1,8 @@
 const { Router } = require("express");
 const userRouter = Router();
+const storage = require('../utils/multer')
+
+
 
 const {
   signUp,
@@ -13,11 +16,13 @@ const {
   forgottenPassword,
   updatePassword,
   verifyEmail,
+  uploadPhoto
 } = (userController = require("../controller/user.controller"));
 
 userRouter.post("/user/register", signUp);
 userRouter.post("/user/login", loginUser);
 userRouter.post("/user/reset-password", forgotPassword);
+userRouter.post('/user/picture/:id', storage.single('file'), uploadPhoto)
 userRouter.post("/user/logout", loggedOut);
 userRouter.get("/user", fetchAllUsers);
 userRouter.get("/user/reset-password/:id/:token", forgottenPassword);

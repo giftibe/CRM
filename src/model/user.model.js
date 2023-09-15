@@ -50,17 +50,21 @@ const userSchema = new Schema(
       default: ENUM.STATE,
     },
 
-    image: {
+    cloudinary_id: {
       type: String,
-      trim: true,
-      default: ENUM.IMAGE,
+      default: ""
     },
 
-    // Add verification fields
+    url: {
+      type: String,
+      default: ""
+    },
+
     isVerified: {
       type: Boolean,
       default: false,
     },
+
     verificationToken: {
       type: String,
     },
