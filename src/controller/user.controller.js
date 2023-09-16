@@ -3,13 +3,9 @@ const checkValidId = require("../utils/validateID");
 const { MESSAGES } = require("../config/constant.config");
 const usersServices = require("../service/user.service");
 const mailer = require("../utils/emailer");
-const verifier = require("../utils/verifier");
 const cloudinary = require("../utils/cloudinary");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const senderEmail = process.env.EMAIL;
-const pass = process.env.APP_PASSWORD;
 const fs = require("fs");
 const path = require("path");
 
@@ -67,22 +63,12 @@ class userControllers {
       //email sending
       const htmlFileDir = path.join(__dirname, "../client/verify-1.html");
       const htmlFiler = fs.readFileSync(htmlFileDir, "utf8");
-      const verifierHtml = htmlFiler.replace(
-        "{{VERIFICATIONLINK}}",
-        verificationLink
+      const template = htmlFiler.replace("{{VERIFICATIONLINK}}", verificationLink
       );
+      const subject = "Verify Your Email"
 
       // using nodemailer to send the email
-      const sendMailer = verifier(verifierHtml, email);
-
-      //   transporter.sendMail(mailOptions, (error) => {
-      //     if (error) {
-      //       return res.status(501).send({
-      //         message: MESSAGES.USER.EMAIL_UNSENT + error,
-      //         success: false,
-      //       });
-      //     }
-      //   });
+      mailer(subject, template, email)
 
       return res.status(201).send({
         message: MESSAGES.USER.CREATED,
@@ -111,36 +97,16 @@ class userControllers {
       }
 
       // Update the user's verification status to true
+      const { email } = decoded
       await updateUserVerificationStatus(decoded.email, true);
 
       // welcome email
 
       // Read the HTML email template from the file asynchronously
-      const welcomeTemplate = fs.readFile("../client/welcome-1.html", "utf-8");
-
-      const transporter = nodemailer.createTransport({
-        service: "yahoo",
-        auth: {
-          user: senderEmail,
-          pass: pass,
-        },
-      });
-
-      const welcomeEmail = {
-        from: senderEmail,
-        to: decoded.email, // Use the user's email from the decoded token
-        subject: "Welcome to Propell",
-        html: welcomeTemplate,
-      };
-
-      transporter.sendMail(welcomeEmail, (error) => {
-        if (error) {
-          return res.status(501).send({
-            message: MESSAGES.USER.WELCOME_EMAIL_ERROR + error,
-            success: false,
-          });
-        }
-      });
+      const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
+      const template = fs.readFileSync(templateFileDir, "utf8");
+      const subject = "Welcome to Propell"
+      mailer(subject, template, email)
 
       return res.status(200).send({
         message: MESSAGES.USER.EMAIL_VERIFIED,
@@ -246,10 +212,11 @@ class userControllers {
       //email sending
       const htmlFilePath = path.join(__dirname, "../client/password.html");
       const htmlFile = fs.readFileSync(htmlFilePath, "utf8");
-      const replacedHtml = htmlFile.replace("{{LINK}}", link);
+      const template = htmlFile.replace("{{LINK}}", link);
+      const subject = "Reset Password"
 
       // using nodemailer to send the email
-      const sendMail = mailer(replacedHtml, email);
+      mailer(subject, template, email);
 
       return res.status(401).send({
         success: false,

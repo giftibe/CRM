@@ -5,7 +5,7 @@ const { MESSAGES } = require("../config/constant.config");
 const path = require('path')
 
 
-Mailer = (replacedHtml, email) => {
+Mailer = (subject, template, email) => {
     const transporter = nodemailer.createTransport({
         service: "yahoo",
         auth: {
@@ -20,8 +20,8 @@ Mailer = (replacedHtml, email) => {
     const mailOptions = {
         from: senderEmail,
         to: email,
-        subject: "Reset Password",
-        html: replacedHtml
+        subject: subject,
+        html: template
     };
 
     // Sending the email
