@@ -2,10 +2,10 @@ const nodemailer = require("nodemailer");
 const senderEmail = process.env.EMAIL;
 const pass = process.env.APP_PASSWORD;
 const { MESSAGES } = require("../config/constant.config");
+const path = require('path')
 
 
-
-Mailer = (link, email) => {
+Mailer = (replacedHtml, email) => {
     const transporter = nodemailer.createTransport({
         service: "yahoo",
         auth: {
@@ -14,24 +14,14 @@ Mailer = (link, email) => {
         },
     });
 
-    // Composed the email message
+    // setup e-mail data with unicode symbols
+
+
     const mailOptions = {
         from: senderEmail,
         to: email,
         subject: "Reset Password",
-        html: `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Password Reset</title>
-                    </head>
-                    <body>
-                        <p>Hello,</p>
-                        <p>You've requested to reset your password. Click the link below to reset it:</p>
-                        <a href="${link}">Reset Password</a>
-                    </body>
-                    </html>
-                    `,
+        html: replacedHtml
     };
 
     // Sending the email
