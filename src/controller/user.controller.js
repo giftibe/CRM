@@ -3,6 +3,7 @@ const checkValidId = require("../utils/validateID");
 const { MESSAGES } = require("../config/constant.config");
 const usersServices = require("../service/user.service");
 const mailer = require("../utils/emailer");
+const verifier = require("../utils/verifier");
 const cloudinary = require("../utils/cloudinary");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -62,37 +63,26 @@ class userControllers {
 
       //  Send a verification email
       const verificationLink = `https://propell-ten.vercel.app/verify-email?token=${verificationToken}`;
-      const transporter = nodemailer.createTransport({
-        service: "yahoo",
-        auth: {
-          user: senderEmail,
-          pass: pass,
-        },
-      });
 
-      const mailOptions = {
-        from: senderEmail,
-        to: email,
-        subject: "Verify Your Email",
-        html: `
-                <html>
-                    <body>
-                    <p>Hello,</p>
-                    <p>Thank you for signing up. Please verify your email by clicking the link below:</p>
-                    <a href="${verificationLink}">Verify Email</a>
-                    </body>
-                </html>
-                `,
-      };
+      //email sending
+      const htmlFileDir = path.join(__dirname, "../client/verify-1.html");
+      const htmlFiler = fs.readFileSync(htmlFileDir, "utf8");
+      const verifierHtml = htmlFiler.replace(
+        "{{VERIFICATIONLINK}}",
+        verificationLink
+      );
 
-      transporter.sendMail(mailOptions, (error) => {
-        if (error) {
-          return res.status(501).send({
-            message: MESSAGES.USER.EMAIL_UNSENT + error,
-            success: false,
-          });
-        }
-      });
+      // using nodemailer to send the email
+      const sendMailer = verifier(verifierHtml, email);
+
+      //   transporter.sendMail(mailOptions, (error) => {
+      //     if (error) {
+      //       return res.status(501).send({
+      //         message: MESSAGES.USER.EMAIL_UNSENT + error,
+      //         success: false,
+      //       });
+      //     }
+      //   });
 
       return res.status(201).send({
         message: MESSAGES.USER.CREATED,
