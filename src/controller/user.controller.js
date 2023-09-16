@@ -98,12 +98,13 @@ class userControllers {
 
       // Update the user's verification status to true
       const { email } = decoded
-      await updateUserVerificationStatus(email, true);
+      await updateUserVerificationStatus(decoded.email, true);
 
       // welcome email
 
       // Read the HTML email template from the file asynchronously
-      const template = fs.readFile("../client/welcome-1.html", "utf-8");
+      const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
+      const template = fs.readFileSync(templateFileDir, "utf8");
       const subject = "Welcome to Propell"
       mailer(subject, template, email)
 
