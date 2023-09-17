@@ -109,7 +109,7 @@ class userControllers {
       //get the found user id
       const { id } = verifiedUser
       //update the isverified field of the found user to true with its id
-      console.log("users id ", id)
+      // console.log("users id ", id)
 
       // const update_verified_user = await updateUser(id, { isVerified: true }, { new: true })
       const update_verified_user = await users.findByIdAndUpdate(
@@ -118,7 +118,7 @@ class userControllers {
         { new: true }
       );
       // This option returns the updated document
-      console.log("user verified ", update_verified_user)
+      // console.log("user verified ", update_verified_user)
 
       // welcome email
 
