@@ -49,20 +49,6 @@ class userService {
       });
     }
   }
-
-  // Function to create a user with verification token
-  async createUserWithVerification(data) {
-    try {
-      const secret = process.env.SECRET_KEY;
-      const verificationToken = jwt.sign({ email: data.email }, secret, {
-        expiresIn: "5m",
-      });
-      const user = await this.createUser({ ...data, verificationToken });
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
 }
 
 module.exports = new userService();

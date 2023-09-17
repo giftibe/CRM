@@ -58,7 +58,7 @@ class userControllers {
       const user = await createUser({ ...req.body, verificationToken });
 
       //  Send a verification email
-      const verificationLink = `https://propell-ten.vercel.app/verify-email?token=${verificationToken}`;
+      const verificationLink = `https://propell-ten.vercel.app/verify-email/${verificationToken}`;
 
       //email sending
       const htmlFileDir = path.join(__dirname, "../client/verify-1.html");
@@ -83,7 +83,7 @@ class userControllers {
   }
 
   async verifyEmail(req, res) {
-    const { token } = req.query;
+    const { token } = req.params;
 
     try {
       const secret = process.env.SECRET_KEY;
@@ -218,8 +218,8 @@ class userControllers {
       // using nodemailer to send the email
       mailer(subject, template, email);
 
-      return res.status(401).send({
-        success: false,
+      return res.status(201).send({
+        success: true,
         message: MESSAGES.USER.EMAIL_SENT,
       });
     } catch (error) {
@@ -287,7 +287,7 @@ class userControllers {
       await updateUser(id, { password: password });
       return res.status(201).send({
         message: MESSAGES.USER.PASSWORD_UPDATED,
-        success: false,
+        success: true,
       });
     } catch (error) {
       return res.status(500).send({
