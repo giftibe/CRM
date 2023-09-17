@@ -24,7 +24,7 @@ class userService {
 
   // Function to get a user by email
   async getAUserByEmail(data) {
-    return await users.findOne(data);
+    return await users.findOne(data)
   }
 
   // Function to update a user's data
@@ -36,6 +36,7 @@ class userService {
   // Function to update a user's verification status
   async updateUserVerificationStatus(email, isVerified) {
     try {
+      console.log("console at services", isVerified)
       const user = await users.findOneAndUpdate(
         { email: email },
         { $set: { isVerified: isVerified } },
@@ -43,8 +44,10 @@ class userService {
       );
       return user;
     } catch (error) {
+      console.log("error at services")
+
       return res.status(403).send({
-        message: MESSAGES.USER.NOT_VERIFIED,
+        message: "SERVICE ERROR: MESSAGES.USER.NOT_VERIFIED",
         success: false,
       });
     }

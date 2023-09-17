@@ -22,7 +22,7 @@ const {
   verifyEmail,
   uploadPhoto
 } = (userController = require("../controller/user.controller"));
-
+userRouter.get("/user/verifyMail/:token", verifyEmail);
 userRouter.post("/user/register", validate_Account_Creation_Inputs, signUp);
 userRouter.post("/user/login", validate_User_Login_Inputs, loginUser);
 userRouter.post("/user/reset-password", forgotPassword);
@@ -34,6 +34,5 @@ userRouter.get("/user/:id", findAUser);
 userRouter.patch("/user/setpassword", updatePassword);
 userRouter.patch("/user/:id", validate_User_Update, updateAUser);
 userRouter.delete("/user/:id", removeUser);
-userRouter.get("/user/verify-email/:token", verifyEmail);
 
 module.exports = userRouter;
