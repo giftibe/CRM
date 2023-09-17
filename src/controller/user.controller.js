@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
+const users = require("../model/user.model")
 
 // Destructure service functions from usersServices
 const {
@@ -58,7 +59,7 @@ class userControllers {
       const user = await createUser({ ...req.body, verificationToken });
 
       //  Send a verification email
-      const verificationLink = `https://propell-ten.vercel.app/verify-email/${verificationToken}`;
+      const verificationLink = `https://propell-ten.vercel.app/verifyMail/${encodeURIComponent(verificationToken)}`;
 
       //email sending
       const htmlFileDir = path.join(__dirname, "../client/verify-1.html");
@@ -83,38 +84,64 @@ class userControllers {
   }
 
   async verifyEmail(req, res) {
-    const { token } = req.params;
-
     try {
+      const { token } = req.params;
       const secret = process.env.SECRET_KEY;
       const decoded = jwt.verify(token, secret);
 
       if (!decoded) {
-        return res.status(204).send({
-          message: MESSAGES.USER.EMAIL_VER_FAILED,
+        return res.status(405).send({
+          message: "MESSAGES.USER.EMAIL_VER_FAILED",
           success: false,
         });
       }
 
+
+
+
       // Update the user's verification status to true
       const { email } = decoded
-      await updateUserVerificationStatus(decoded.email, true);
+      // const updated = await updateUserVerificationStatus(decoded.email, true);
+
+      // find the user with the email
+      const verifiedUser = await getAUserByEmail({ data: email })
+
+      //get the found user id
+      const { id } = verifiedUser
+      //update the isverified field of the found user to true with its id
+      // console.log("users id ", id)
+
+      // const update_verified_user = await updateUser(id, { isVerified: true }, { new: true })
+      const update_verified_user = await users.findByIdAndUpdate(
+        verifiedUser.id,
+        { $set: { isVerified: true } },
+        { new: true }
+      );
+      // This option returns the updated document
+      // console.log("user verified ", update_verified_user)
 
       // welcome email
 
-      // Read the HTML email template from the file asynchronously
-      const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
-      const template = fs.readFileSync(templateFileDir, "utf8");
-      const subject = "Welcome to Propell"
-      mailer(subject, template, email)
+      if (update_verified_user) {
+        const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
+        const template = fs.readFileSync(templateFileDir, "utf8");
+        const subject = "Welcome to Propell"
+        mailer(subject, template, email)
 
-      return res.status(200).send({
-        message: MESSAGES.USER.EMAIL_VERIFIED,
-        success: true,
+        return res.status(200).send({
+          message: "MESSAGES.USER.EMAIL_VERIFIED",
+          success: true,
+        });
+      }
+
+      return res.status(402).send({
+        message: "MESSAGES.USER.EMAIL_NOT_VERIFIED",
+        success: false,
       });
+
     } catch (error) {
       return res.status(403).send({
-        message: MESSAGES.USER.INVALID_TOKEN,
+        message: "HERE MESSAGES.USER.INVALID_TOKEN",
         success: false,
       });
     }
@@ -207,7 +234,7 @@ class userControllers {
       };
 
       const token = jwt.sign(payload, secret, { expiresIn: "10m" });
-      const link = `https://propell-ten.vercel.app/user/reset-password/${userEmail.id}/${token}`;
+      const link = `https://propell-ten.vercel.app/user/reset-password/${encodeURIComponent(userEmail.id)}/${encodeURIComponent(token)}`;
 
       //email sending
       const htmlFilePath = path.join(__dirname, "../client/password.html");
