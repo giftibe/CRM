@@ -291,22 +291,23 @@ class userControllers {
     }
   }
 
-  //      @route  PATCH /api/v1/user/setpassword
+  //      @route  PATCH /api/v1/user/setpassword/:id
   //     @desc    updates the password field
   //     *  @access  Private
 
   async updatePassword(req, res, next) {
     try {
       //check if  the email exist
-      const { email, password } = req.body;
-      const findUserEmail = await getAUserByEmail({ email: email });
-      if (!findUserEmail) {
-        return res.status(401).send({
+      const password = req.body.password;
+      const { id } = req.params
+
+      const userfound = await getAUserById(id)
+      if (!userfound) {
+        return res.status(404).send({
           message: MESSAGES.USER.EMAIL_NOTFOUND,
           success: false,
         });
       }
-      const { id } = findUserEmail;
       //generate new password and update it
       await updateUser(id, { password: password });
       return res.status(201).send({
