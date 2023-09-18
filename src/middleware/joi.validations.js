@@ -19,6 +19,7 @@ const updateUser = Joi.object({
   mobile: Joi.number(),
   country: Joi.string(),
   state: Joi.string(),
+  isVerified: Joi.boolean()
 })
 
 

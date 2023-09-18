@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
-const users = require("../model/user.model")
+const users = require("../model/user.model");
 
 // Destructure service functions from usersServices
 const {
@@ -52,7 +52,7 @@ class userControllers {
       const secret = process.env.SECRET_KEY;
       //  Generate a unique verification token (JWT)
       const verificationToken = jwt.sign({ email }, secret, {
-        expiresIn: "20m", // You can adjust the expiration time
+        expiresIn: "30m",
       });
 
       //  Create a new user object with the provided data and the generated token
@@ -83,69 +83,66 @@ class userControllers {
     }
   }
 
+
+  //    @route   GET /api/v1/user/verifyMail/:token
+  //     @desc    to validate the user
+  //     *  @access  Private
+
   async verifyEmail(req, res) {
     try {
-      const { token } = req.params;
+      const token = req.params.token;
       const secret = process.env.SECRET_KEY;
       const decoded = jwt.verify(token, secret);
 
       if (!decoded) {
         return res.status(405).send({
-          message: "MESSAGES.USER.EMAIL_VER_FAILED",
+          message: MESSAGES.USER.EMAIL_VER_FAILED,
           success: false,
         });
       }
 
-
-
-
       // Update the user's verification status to true
-      const { email } = decoded
-      // const updated = await updateUserVerificationStatus(decoded.email, true);
+      const { email } = decoded;
 
-      // find the user with the email
-      const verifiedUser = await getAUserByEmail({ data: email })
+      // Find the user by email
+      const verifiedUser = await users.findOne({ email });
 
-      //get the found user id
-      const { id } = verifiedUser
-      //update the isverified field of the found user to true with its id
-      // console.log("users id ", id)
+      if (!verifiedUser) {
+        return res.status(404).send({
+          message: MESSAGES.USER.ACCOUNT_NOT_REGISTERED,
+          success: false,
+        });
+      }
 
-      // const update_verified_user = await updateUser(id, { isVerified: true }, { new: true })
-      const update_verified_user = await users.findByIdAndUpdate(
-        verifiedUser.id,
-        { $set: { isVerified: true } },
-        { new: true }
-      );
-      // This option returns the updated document
-      // console.log("user verified ", update_verified_user)
-
-      // welcome email
-
-      if (update_verified_user) {
+      // Update the isVerified field in the database
+      const updateResult = await users.updateOne({ _id: verifiedUser._id }, { isVerified: true });
+      // Check if the update was successful
+      if (updateResult.modifiedCount === 1) {
+        // Send a welcome email
         const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
         const template = fs.readFileSync(templateFileDir, "utf8");
-        const subject = "Welcome to Propell"
-        mailer(subject, template, email)
+        const subject = "Welcome to Propell";
+        mailer(subject, template, email);
 
         return res.status(200).send({
-          message: "MESSAGES.USER.EMAIL_VERIFIED",
+          message: MESSAGES.USER.EMAIL_VERIFIED,
           success: true,
         });
       }
 
-      return res.status(402).send({
-        message: "MESSAGES.USER.EMAIL_NOT_VERIFIED",
+      return res.status(403).send({
+        message: MESSAGES.USER.EMAIL_NOT_VERIFIED,
         success: false,
       });
 
     } catch (error) {
       return res.status(403).send({
-        message: "HERE MESSAGES.USER.INVALID_TOKEN",
+        message: MESSAGES.USER.INVALID_TOKEN,
         success: false,
       });
     }
   }
+
 
   //    @route   POST /api/v1/user/login
   //     @desc    Handles user login
@@ -179,7 +176,7 @@ class userControllers {
       }
 
       // Check if the user is verified
-      //   if (!user.isVerified) {
+      //   if (user.isVerified === false) {
       //     return res.status(403).send({
       //       message: MESSAGES.USER.EMAIL_NOT_VERIFIED,
       //       success: false,
@@ -233,7 +230,7 @@ class userControllers {
         id: userEmail.id,
       };
 
-      const token = jwt.sign(payload, secret, { expiresIn: "10m" });
+      const token = jwt.sign(payload, secret, { expiresIn: "20m" });
       const link = `https://propell-ten.vercel.app/user/reset-password/${encodeURIComponent(userEmail.id)}/${encodeURIComponent(token)}`;
 
       //email sending
