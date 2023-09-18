@@ -31,7 +31,7 @@ userRouter.post("/user/logout", loggedOut);
 userRouter.get("/user", fetchAllUsers);
 userRouter.get("/user/reset-password/:id/:token", forgottenPassword);
 userRouter.get("/user/:id", findAUser);
-userRouter.patch("/user/setpassword", updatePassword);
+userRouter.patch("/user/setpassword/:id", updatePassword);
 userRouter.patch("/user/:id", validate_User_Update, updateAUser);
 userRouter.delete("/user/:id", removeUser);
 

@@ -5,7 +5,7 @@ const { MESSAGES } = require("../config/constant.config");
 const path = require('path')
 
 
-Mailer = (subject, template, email) => {
+Mailer = async (subject, template, email) => {
     const transporter = nodemailer.createTransport({
         service: "yahoo",
         auth: {
@@ -27,10 +27,8 @@ Mailer = (subject, template, email) => {
     // Sending the email
     transporter.sendMail(mailOptions, (error) => {
         if (error) {
-            return res.status(501).send({
-                message: MESSAGES.USER.EMAIL_UNSENT + error,
-                success: false,
-            });
+            console.error(error);
+            throw new Error(MESSAGES.USER.EMAIL_UNSENT + error);
         }
     });
 }
