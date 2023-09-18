@@ -27,10 +27,8 @@ Mailer = (subject, template, email) => {
     // Sending the email
     transporter.sendMail(mailOptions, (error) => {
         if (error) {
-            return res.status(501).send({
-                message: MESSAGES.USER.EMAIL_UNSENT + error,
-                success: false,
-            });
+            console.error(error);
+            throw new Error(MESSAGES.USER.EMAIL_UNSENT + error);
         }
     });
 }
