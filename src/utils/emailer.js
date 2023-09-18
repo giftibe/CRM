@@ -5,7 +5,7 @@ const { MESSAGES } = require("../config/constant.config");
 const path = require('path')
 
 
-Mailer = (subject, template, email) => {
+Mailer = async (subject, template, email) => {
     const transporter = nodemailer.createTransport({
         service: "yahoo",
         auth: {
