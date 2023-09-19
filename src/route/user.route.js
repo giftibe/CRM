@@ -6,7 +6,7 @@ const {
   validate_User_Login_Inputs,
   validate_User_Update
 } = (validate = require('../middleware/joi.validations'))
-
+const auth = require('../middleware/auth.middleware')
 
 const {
   signUp,
@@ -27,12 +27,12 @@ userRouter.post("/user/register", validate_Account_Creation_Inputs, signUp);
 userRouter.post("/user/login", validate_User_Login_Inputs, loginUser);
 userRouter.post("/user/reset-password", forgotPassword);
 userRouter.post('/user/picture/:id', storage.single('file'), uploadPhoto)
-userRouter.post("/user/logout", loggedOut);
+userRouter.post("/user/logout", auth, loggedOut);
 userRouter.get("/user", fetchAllUsers);
 userRouter.get("/user/reset-password/:id/:token", forgottenPassword);
 userRouter.get("/user/:id", findAUser);
 userRouter.patch("/user/setpassword/:id", updatePassword);
-userRouter.patch("/user/:id", validate_User_Update, updateAUser);
-userRouter.delete("/user/:id", removeUser);
+userRouter.patch("/user/:id", auth, validate_User_Update, updateAUser);
+userRouter.delete("/user/:id", auth, removeUser);
 
 module.exports = userRouter;
