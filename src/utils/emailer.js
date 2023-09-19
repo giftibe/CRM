@@ -6,31 +6,36 @@ const path = require('path')
 
 
 Mailer = async (subject, template, email) => {
-    const transporter = nodemailer.createTransport({
-        service: "yahoo",
-        auth: {
-            user: senderEmail,
-            pass: pass,
-        },
-    });
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "yahoo",
+            auth: {
+                user: senderEmail,
+                pass: pass,
+            },
+        });
 
-    // setup e-mail data with unicode symbols
+        // setup e-mail data with unicode symbols
+        const mailOptions = {
+            from: senderEmail,
+            to: email,
+            subject: subject,
+            html: template
+        };
 
-
-    const mailOptions = {
-        from: senderEmail,
-        to: email,
-        subject: subject,
-        html: template
-    };
-
-    // Sending the email
-    transporter.sendMail(mailOptions, (error) => {
-        if (error) {
+        // Sending the email
+        try {
+            await transporter.sendMail(mailOptions);
+            // Email sent successfully
+        } catch (error) {
             console.error(error);
             throw new Error(MESSAGES.USER.EMAIL_UNSENT + error);
         }
-    });
+
+    } catch (error) {
+        console.error(error);
+        throw new Error(MESSAGES.USER.EMAIL_UNSENT + error);
+    }
 }
 
 module.exports = Mailer
