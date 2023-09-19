@@ -230,7 +230,7 @@ class userControllers {
         id: userEmail.id,
       };
 
-      const token = jwt.sign(payload, secret, { expiresIn: "20m" });
+      const token = jwt.sign(payload, secret, { expiresIn: "30m" });
       const link = `https://propell-ten.vercel.app/user/reset-password/${encodeURIComponent(userEmail.id)}/${encodeURIComponent(token)}`;
 
       //email sending

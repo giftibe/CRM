@@ -1,10 +1,10 @@
 const ENUM = {
-  COUNTRY: "NULL",
-  STATE: "NULL",
-  RESOURCES: "NULL",
-  FIRSTNAME: "NULL",
-  LASTNAME: "NULL",
-  IMAGE: "NULL",
+  COUNTRY: "",
+  STATE: "",
+  RESOURCES: "",
+  FIRSTNAME: "",
+  LASTNAME: "",
+  IMAGE: "",
   MOBILE: 0,
 };
 
