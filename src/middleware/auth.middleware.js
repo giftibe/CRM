@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { MESSAGES } = require('../config/constant.config')
 const users = require('../model/user.model')
-const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.config();
 
@@ -11,21 +10,22 @@ const auth = async (req, res, next) => {
         //checks if there is a header
         const bearHeader = req.headers['authorization']
         if (typeof bearHeader == 'undefined') {
-            req.token = bearToken
-            res.status(403).send({
+            
+            return res.status(403).send({
                 message: MESSAGES.USER.UNAUTHORIZED + 'no bearheader',
                 success: false
             })
 
         }
         const bearToken = bearHeader.split(' ')[1];
+        req.token = bearToken
         if (!bearToken) {
-            res.status(403).send({
+            return res.status(403).send({
                 message: 'insert a token',
                 success: false
             })
         }
-        //using bcrypt to  compare the password
+        //using jwt to  compare the password
         const verified = jwt.verify(bearToken, process.env.SECRET_KEY, async (err, decoded) => {
             if (err) {
                 return res.status(401)
@@ -53,7 +53,6 @@ const auth = async (req, res, next) => {
             message: 'Internal Server Error: No token found ' + error,
             success: false
         })
-
     }
 }
 module.exports = auth

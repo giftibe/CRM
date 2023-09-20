@@ -9,6 +9,7 @@ const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
 const users = require("../model/user.model");
+const validateEmail = require('../utils/validateEmail')
 
 // Destructure service functions from usersServices
 const {
