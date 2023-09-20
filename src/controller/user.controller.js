@@ -59,17 +59,21 @@ class userControllers {
       const user = await createUser({ ...req.body, verificationToken });
 
       //  Send a verification email
-      const verificationLink = `https://propell-ten.vercel.app/verifyMail/${encodeURIComponent(verificationToken)}`;
+      const verificationLink = `https://propell-ten.vercel.app/verifyMail/${encodeURIComponent(
+        verificationToken
+      )}`;
 
       //email sending
       const htmlFileDir = path.join(__dirname, "../client/verify-1.html");
       const htmlFiler = fs.readFileSync(htmlFileDir, "utf8");
-      const template = htmlFiler.replace("{{VERIFICATIONLINK}}", verificationLink
+      const template = htmlFiler.replace(
+        "{{VERIFICATIONLINK}}",
+        verificationLink
       );
-      const subject = "Verify Your Email"
+      const subject = "Verify Your Email";
 
       // using nodemailer to send the email
-      mailer(subject, template, email)
+      mailer(subject, template, email);
 
       return res.status(201).send({
         message: MESSAGES.USER.CREATED,
@@ -82,7 +86,6 @@ class userControllers {
       });
     }
   }
-
 
   //    @route   GET /api/v1/user/verifyMail/:token
   //     @desc    to validate the user
@@ -115,11 +118,17 @@ class userControllers {
       }
 
       // Update the isVerified field in the database
-      const updateResult = await users.updateOne({ _id: verifiedUser._id }, { isVerified: true });
+      const updateResult = await users.updateOne(
+        { _id: verifiedUser._id },
+        { isVerified: true }
+      );
       // Check if the update was successful
       if (updateResult.modifiedCount === 1) {
         // Send a welcome email
-        const templateFileDir = path.join(__dirname, "../client/welcome-1.html");
+        const templateFileDir = path.join(
+          __dirname,
+          "../client/welcome-1.html"
+        );
         const template = fs.readFileSync(templateFileDir, "utf8");
         const subject = "Welcome to Propell";
         mailer(subject, template, email);
@@ -134,7 +143,6 @@ class userControllers {
         message: MESSAGES.USER.EMAIL_NOT_VERIFIED,
         success: false,
       });
-
     } catch (error) {
       return res.status(403).send({
         message: MESSAGES.USER.INVALID_TOKEN,
@@ -142,7 +150,6 @@ class userControllers {
       });
     }
   }
-
 
   //    @route   POST /api/v1/user/login
   //     @desc    Handles user login
@@ -176,12 +183,13 @@ class userControllers {
       }
 
       // Check if the user is verified
-      //   if (user.isVerified === false) {
-      //     return res.status(403).send({
-      //       message: MESSAGES.USER.EMAIL_NOT_VERIFIED,
-      //       success: false,
-      //     });
-      //   }
+
+      if (user.isVerified === false) {
+        return res.status(403).send({
+          message: MESSAGES.USER.EMAIL_NOT_VERIFIED,
+          success: false,
+        });
+      }
 
       const check = await bcrypt.compare(enteredPassword, user.password);
       if (!check) {
@@ -231,13 +239,15 @@ class userControllers {
       };
 
       const token = jwt.sign(payload, secret, { expiresIn: "30m" });
-      const link = `https://propell-ten.vercel.app/user/reset-password/${encodeURIComponent(userEmail.id)}/${encodeURIComponent(token)}`;
+      const link = `https://propell-ten.vercel.app/user/reset-password/${encodeURIComponent(
+        userEmail.id
+      )}/${encodeURIComponent(token)}`;
 
       //email sending
       const htmlFilePath = path.join(__dirname, "../client/password.html");
       const htmlFile = fs.readFileSync(htmlFilePath, "utf8");
       const template = htmlFile.replace("{{LINK}}", link);
-      const subject = "Reset Password"
+      const subject = "Reset Password";
 
       // using nodemailer to send the email
       mailer(subject, template, email);
@@ -299,9 +309,9 @@ class userControllers {
     try {
       //check if  the email exist
       const password = req.body.password;
-      const { id } = req.params
+      const { id } = req.params;
 
-      const userfound = await getAUserById(id)
+      const userfound = await getAUserById(id);
       if (!userfound) {
         return res.status(404).send({
           message: MESSAGES.USER.EMAIL_NOTFOUND,
