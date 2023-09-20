@@ -34,7 +34,7 @@ const auth = async (req, res, next) => {
                         message: "INVALIDTOKEN"
                     });
             } else {
-                const user = await users.findById(decoded);
+                const user = await users.findById(decoded.id);
                 if (!user) {
                     return res.status(401)
                         .send({
