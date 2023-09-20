@@ -3,13 +3,13 @@ const Joi = require('joi')
 // CREATION OF JOI SCHEMAS
 
 const createAccountSchema = Joi.object({
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required(),
 })
 
 
 const loginUserSchema = Joi.object({
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required()
 })
 
